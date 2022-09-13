@@ -3,6 +3,8 @@
 > <p align="right"><a href="https://baike.baidu.com/item/spring/85061">——摘自百度百科</a></p>
 
 [Spring官网](https://spring.io/)
+# Bean
+&emsp;&emsp;什么是Bean？在我个人的理解中，这里所谓的Bean就是由Spring管理的对象，这也是Spring的核心作用。
 # IOC（控制反转）
 
 # DI（依赖注入）
