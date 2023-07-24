@@ -48,3 +48,30 @@ public class MpConfig {
     }
 }
 ```
+
+## FastJson配置类（FastJson版本：1.2.33）
+```java
+public class WebConfig implements WebMvcConfigurer {
+    @Bean   //使用@Bean注入fastJsonHttpMessageConvert
+    public HttpMessageConverter fastJsonHttpMessageConverters() {
+        //1.需要定义一个Convert转换消息的对象
+        FastJsonHttpMessageConverter fastConverter = new FastJsonHttpMessageConverter();
+        FastJsonConfig fastJsonConfig = new FastJsonConfig();
+        fastJsonConfig.setSerializerFeatures(SerializerFeature.PrettyFormat);
+        //统一设置Date序列化后的格式
+        fastJsonConfig.setDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+        SerializeConfig.globalInstance.put(Long.class, ToStringSerializer.instance);
+
+        fastJsonConfig.setSerializeConfig(SerializeConfig.globalInstance);
+        fastConverter.setFastJsonConfig(fastJsonConfig);
+        HttpMessageConverter<?> converter = fastConverter;
+        return converter;
+    }
+
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        converters.add(fastJsonHttpMessageConverters());
+    }
+}
+```
