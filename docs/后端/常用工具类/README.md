@@ -208,7 +208,7 @@ public class JwtUtil {
     }
     
     /**
-     * 生成jtw
+     * 生成jwt
      * @param subject token中要存放的数据（json格式）
      * @return
      */
@@ -218,7 +218,7 @@ public class JwtUtil {
     }
 
     /**
-     * 生成jtw
+     * 生成jwt
      * @param subject token中要存放的数据（json格式）
      * @param ttlMillis token超时时间
      * @return
