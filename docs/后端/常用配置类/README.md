@@ -154,3 +154,126 @@ public class SecurityConfig {
     }
 }
 ```
+
+## Redis使用FastJson序列化
+```java
+package com.creator.config;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.parser.ParserConfig;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.SerializationException;
+
+import java.nio.charset.Charset;
+
+/**
+ * Redis使用FastJson序列化
+ *
+ * @author
+ */
+public class FastJsonRedisSerializer<T> implements RedisSerializer<T> {
+
+    public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+
+    private Class<T> clazz;
+
+    static {
+        ParserConfig.getGlobalInstance().setAutoTypeSupport(true);
+    }
+
+    public FastJsonRedisSerializer(Class<T> clazz) {
+        super();
+        this.clazz = clazz;
+    }
+
+    @Override
+    public byte[] serialize(T t) throws SerializationException {
+        if (t == null) {
+            return new byte[0];
+        }
+        return JSON.toJSONString(t, SerializerFeature.WriteClassName).getBytes(DEFAULT_CHARSET);
+    }
+
+    @Override
+    public T deserialize(byte[] bytes) throws SerializationException {
+        if (bytes == null || bytes.length <= 0) {
+            return null;
+        }
+        String str = new String(bytes, DEFAULT_CHARSET);
+
+        return JSON.parseObject(str, clazz);
+    }
+
+
+    protected JavaType getJavaType(Class<?> clazz) {
+        return TypeFactory.defaultInstance().constructType(clazz);
+    }
+}
+```
+
+## 腾讯云COS配置类
+```java
+package com.creator.config;
+
+import com.qcloud.cos.COSClient;
+import com.qcloud.cos.ClientConfig;
+import com.qcloud.cos.auth.BasicCOSCredentials;
+import com.qcloud.cos.auth.COSCredentials;
+import com.qcloud.cos.region.Region;
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@Data
+public class COSConfig {
+
+    /**
+     * 桶名
+     */
+    @Value("${cos.bucket}")
+    private String bucket;
+
+    /**
+     * 桶所在的区域名
+     */
+    @Value("${cos.region}")
+    private String region;
+
+    /**
+     * 用户的 SecretId，建议使用子账号密钥，授权遵循最小权限指引，降低使用风险。<br>
+     * 子账号密钥获取可参见 https://cloud.tencent.com/document/product/598/37140
+     */
+    @Value("${cos.secret-id}")
+    private String secretId;
+
+    /**
+     * 用户的 SecretKey，建议使用子账号密钥，授权遵循最小权限指引，降低使用风险。<br>
+     * 子账号密钥获取可参见 https://cloud.tencent.com/document/product/598/37140
+     */
+    @Value("${cos.secret-key}")
+    private String secretKey;
+
+    @Bean
+    public COSClient createCOSClient() {
+        // 1 初始化用户身份信息（secretId, secretKey）。
+        // SECRETID 和 SECRETKEY 请登录访问管理控制台 https://console.cloud.tencent.com/cam/capi 进行查看和管理
+        String secretId = this.secretId;//用户的 SecretId，建议使用子账号密钥，授权遵循最小权限指引，降低使用风险。子账号密钥获取可参见 https://cloud.tencent.com/document/product/598/37140
+        String secretKey = this.secretKey;//用户的 SecretKey，建议使用子账号密钥，授权遵循最小权限指引，降低使用风险。子账号密钥获取可参见 https://cloud.tencent.com/document/product/598/37140
+        COSCredentials cred = new BasicCOSCredentials(secretId, secretKey);
+        // 2 设置 bucket 的地域, COS 地域的简称请参见 https://cloud.tencent.com/document/product/436/6224
+        // clientConfig 中包含了设置 region, https(默认 http), 超时, 代理等 set 方法, 使用可参见源码或者常见问题 Java SDK 部分。
+        Region region = new Region(this.region);
+        ClientConfig clientConfig = new ClientConfig(region);
+        // 这里建议设置使用 https 协议
+        // 从 5.6.54 版本开始，默认使用了 https
+        //clientConfig.setHttpProtocol(HttpProtocol.https);
+        // 3 生成 cos 客户端。
+        return new COSClient(cred, clientConfig);
+    }
+}
+```
