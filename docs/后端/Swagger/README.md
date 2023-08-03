@@ -66,6 +66,7 @@ public class CommentController {
 ```
 
 效果：
+
 ![Swagger演示1.png](https://s2.loli.net/2023/08/03/yR7ZIuq1EOcaV2i.png)
 
 ## 接口配置
@@ -80,6 +81,7 @@ public ResponseResult linkCommentList(@PathVariable Integer pageNum, @PathVariab
 ```
 
 效果：
+
 ![Swagger演示2.png](https://s2.loli.net/2023/08/03/4Cl8Z92tNdKik3x.png)
 
 ### 接口参数配置
@@ -95,8 +97,61 @@ public ResponseResult linkCommentList(@PathVariable Integer pageNum, @PathVariab
 ```
 
 效果：
+
 ![Swagger演示3.png](https://s2.loli.net/2023/08/03/LvBNYi1dcmlVEk8.png)
 
 ## 实体类配置
 
-### 实体的描述配置
+```java
+@ApiModel(description = "添加评论dto")
+public class AddCommentDto {
+    private Long id;
+    @ApiModelProperty(notes = "评论类型（0代表文章评论，1代表友链评论）")
+    private String type;
+    @ApiModelProperty(notes = "文章id")
+    private Long articleId;
+    @ApiModelProperty(notes = "根评论id")
+    private Long rootId;
+    @ApiModelProperty(notes = "评论内容")
+    private String content;
+    @ApiModelProperty(notes = "所回复的目标评论的userid")
+    private Long toCommentUserId;
+    @ApiModelProperty(notes = "回复目标评论id")
+    private Long toCommentId;
+}
+```
+
+效果：
+
+![Swagger演示4.png](https://s2.loli.net/2023/08/03/IK28HvTPckxgwa6.png)
+
+## 文档信息配置
+
+```java
+@Configuration
+public class SwaggerConfig {
+
+    @Bean
+    public Docket customDocket() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.creator.controller"))
+                .build();
+    }
+
+    private ApiInfo apiInfo() {
+        Contact contact = new Contact("创造者MC", "https://github.com/CreatorMC/CreatorMCBlog", "邮箱");
+        return new ApiInfoBuilder()
+                .title("标题")
+                .description("描述")
+                .contact(contact)
+                .version("1.0.0")
+                .build();
+    }
+}
+```
+
+效果：
+
+![Swagger演示5.png](https://s2.loli.net/2023/08/03/tQe7i4aYLjS6zRP.png)
