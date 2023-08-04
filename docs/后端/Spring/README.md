@@ -7,6 +7,8 @@
 &emsp;&emsp;什么是Bean？在我个人的理解中，这里所谓的Bean就是由Spring管理的对象，这也是Spring的核心作用。
 # IOC（控制反转）
 
+&emsp;&emsp;控制反转，之前对象的控制权在类手上，现在反转后到了Spring手上。
+
 # DI（依赖注入）
 
 # AOP（面向切面编程）
