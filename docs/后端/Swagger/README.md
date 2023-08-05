@@ -39,16 +39,43 @@ spring:
       matching-strategy: ant_path_matcher
 ```
 
-3. 在启动类上方添加注解，开启 Swagger2
+3. 在启动类 / 配置类上方添加注解，开启 Swagger2
 
 ```java
 @SpringBootApplication
-//开启Swagger2
+//启动类上开启Swagger2
 @EnableSwagger2
 public class CreatorMCBlogApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(CreatorMCBlogApplication.class);
+    }
+}
+```
+
+```java
+@Configuration
+//配置类上开启Swagger2
+@EnableSwagger2
+public class SwaggerConfig {
+
+    @Bean
+    public Docket customDocket() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.creator.controller"))
+                .build();
+    }
+
+    private ApiInfo apiInfo() {
+        Contact contact = new Contact("创造者MC", "https://github.com/CreatorMC/CreatorMCBlog", "邮箱");
+        return new ApiInfoBuilder()
+                .title("标题")
+                .description("描述")
+                .contact(contact)
+                .version("1.0.0")
+                .build();
     }
 }
 ```
@@ -138,6 +165,7 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
+                //扫描哪个包
                 .apis(RequestHandlerSelectors.basePackage("com.creator.controller"))
                 .build();
     }
@@ -157,3 +185,41 @@ public class SwaggerConfig {
 效果：
 
 ![Swagger演示5.png](https://s2.loli.net/2023/08/03/tQe7i4aYLjS6zRP.png)
+
+## 生产环境下禁用 Swagger
+
+&emsp;&emsp;为了保证安全，生产环境下不能使用 Swagger。防止外人通过 Swagger 知道服务的接口。
+
+```java
+@Configuration
+//有条件的开启Swagger2
+@ConditionalOnProperty(prefix = "swagger", value = {"enable"}, havingValue = "true")
+@EnableSwagger2
+public class SwaggerConfig {
+
+    @Bean
+    public Docket customDocket() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.creator.controller"))
+                .build();
+    }
+
+    private ApiInfo apiInfo() {
+        Contact contact = new Contact("创造者MC", "https://github.com/CreatorMC/CreatorMCBlog", "邮箱");
+        return new ApiInfoBuilder()
+                .title("标题")
+                .description("描述")
+                .contact(contact)
+                .version("1.0.0")
+                .build();
+    }
+}
+```
+
+```yml
+# 自定义配置 swagger是否开启 在生产环境下一定要关闭！
+swagger:
+  enable: false
+```
