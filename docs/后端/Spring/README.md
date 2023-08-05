@@ -3,13 +3,19 @@
 > <p align="right"><a href="https://baike.baidu.com/item/spring/85061">——摘自百度百科</a></p>
 
 [Spring官网](https://spring.io/)
-# Bean
-&emsp;&emsp;什么是Bean？在我个人的理解中，这里所谓的Bean就是由Spring管理的对象，这也是Spring的核心作用。
+# Spring 中的 Bean
+&emsp;&emsp;在我个人的理解中，这里所谓的 Bean 就是在符合 Java Bean 规范的基础上由 Spring 管理的对象，这也是 Spring 的核心。
 # IOC（控制反转）
 
-&emsp;&emsp;控制反转，之前对象的控制权在类手上，现在反转后到了Spring手上。
+&emsp;&emsp;控制反转，之前对象的控制权在类手上，现在反转后到了 Spring 手上。
 
 # DI（依赖注入）
+
+&emsp;&emsp;依赖注入可以理解为 IOC 的一种应用场景，反转的是对象间依赖关系的维护权。
+
+例子：
+
+&emsp;&emsp;现在有一个 UserServiceImpl 类，这个类实现了 UserService 接口。现在通过 Spring 获取到了 UserService 的对象。然后调用此对象的 userInfo 方法。userInfo 方法内需要调用 UserDAO 的对象去查询数据库，但此时 UserServiceImpl 的对象中还没有 UserDAO 的对象，于是程序报空指针异常。DI 正是要解决这样的问题。
 
 # AOP（面向切面编程）
 > 作用：在不改动原始方法的基础上对功能进行**增强**
